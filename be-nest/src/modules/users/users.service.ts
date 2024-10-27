@@ -1,12 +1,14 @@
+import { CreateAuthDto } from '@/auth/dto/create-auth.dto';
+import { hashPasswordHelper } from '@/helpers/util';
 import { BadRequestException, Injectable } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
+import aqp from 'api-query-params';
+import mongoose, { Model, Types } from 'mongoose';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { InjectModel } from '@nestjs/mongoose';
 import { User } from './schemas/user.schema';
-import { Model, Types } from 'mongoose';
-import { hashPasswordHelper } from '@/helpers/util';
-import aqp from 'api-query-params';
-import mongoose from 'mongoose';
+import { v4 as uuidv4 } from 'uuid';
+import dayjs from 'dayjs';
 
 @Injectable()
 export class UsersService {
@@ -101,5 +103,31 @@ export class UsersService {
     } else {
       throw new BadRequestException(`Invalid user ID`);
     }
+  }
+
+  async handleRegister(registerDto: CreateAuthDto) {
+    const { name, email, password } = registerDto;
+
+    // check if email already exist
+    const isEmailExist = await this.isEmailExist(email);
+    if (isEmailExist === true) {
+      throw new BadRequestException(`Email already exist: ${email}`);
+    }
+    // hash password
+    const hashPassword = await hashPasswordHelper(password);
+    const user = await this.userModel.create({
+      name,
+      email,
+      password: hashPassword,
+      isActive: false,
+      codeId: uuidv4(),
+      codeExpired: dayjs().add(1, 'day'),
+    });
+
+    return {
+      _id: user._id,
+    };
+
+    // send email
   }
 }
