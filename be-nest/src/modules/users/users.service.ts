@@ -3,9 +3,10 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { User } from './schemas/user.schema';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { hashPasswordHelper } from '@/helpers/util';
 import aqp from 'api-query-params';
+import mongoose from 'mongoose';
 
 @Injectable()
 export class UsersService {
@@ -61,15 +62,44 @@ export class UsersService {
     return { results, totalPages };
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} user`;
+  async findOne(id: string) {
+    try {
+      if (!Types.ObjectId.isValid(id)) {
+        throw new BadRequestException(`Invalid user ID`);
+      }
+
+      const user = this.userModel.findById(id).select('-password');
+      if (!user) throw new BadRequestException(`User not found`);
+      return user;
+    } catch (error) {
+      throw new BadRequestException(`Internal server error`);
+    }
   }
 
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
+  async findByEmail(email: string) {
+    return await this.userModel.findOne({ email: email });
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} user`;
+  async update(updateUserDto: UpdateUserDto) {
+    return await this.userModel.updateOne(
+      {
+        _id: updateUserDto._id,
+      },
+      {
+        name: updateUserDto.name,
+        phone: updateUserDto.phone,
+        address: updateUserDto.address,
+        image: updateUserDto.image,
+      },
+    );
+  }
+
+  async remove(id: string) {
+    // check id
+    if (mongoose.isValidObjectId(id)) {
+      return this.userModel.deleteOne({ _id: id });
+    } else {
+      throw new BadRequestException(`Invalid user ID`);
+    }
   }
 }
