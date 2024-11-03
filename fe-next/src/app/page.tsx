@@ -1,14 +1,9 @@
-import { Button } from "antd";
+import HomePage from "@/components/layout/homepage";
 
 export default function Home() {
   return (
     <div>
-      <h1>Hello, world!</h1>
-      <p>Welcome to your new Next.js app.</p>
-
-      <div>
-        <Button type="primary">Add new</Button>
-      </div>
+      <HomePage />
     </div>
   );
 }

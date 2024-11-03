@@ -8,14 +8,15 @@ const AdminContent = ({
   children: React.ReactNode;
 }>) => {
   const { Content } = Layout;
+
   return (
-    <Content style={{ margin: "24px 16px 0" }}>
+    <Content>
       <div
         style={{
           padding: 24,
-          minHeight: 360,
-          background: "#ccc",
-          borderRadius: "#ccc",
+          minHeight: "calc(100vh - 180px)",
+          // background: "#ccc",
+          // borderRadius: "#ccc",
         }}
       >
         {children}
@@ -23,4 +24,5 @@ const AdminContent = ({
     </Content>
   );
 };
+
 export default AdminContent;
