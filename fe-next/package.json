@@ -18,11 +18,13 @@
     "antd": "5.20.6",
     "next": "14.2.12",
     "next-auth": "5.0.0-beta.20",
+    "query-string": "^9.1.1",
     "react": "18.3.1",
     "react-dom": "18.3.1"
   },
   "devDependencies": {
     "@types/node": "22.5.5",
+    "@types/query-string": "^6.2.0",
     "@types/react": "18.3.7",
     "@types/react-dom": "18.3.0",
     "eslint": "8.57.0",

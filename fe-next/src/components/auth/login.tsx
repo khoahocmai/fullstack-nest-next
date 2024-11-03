@@ -11,12 +11,6 @@ const Login = () => {
     // trigger sign-in
     const res = await authenticate(email, password);
     console.log(">>> check res", res);
-    // const data = await signIn("credentials", {
-    //   email,
-    //   password,
-    //   redirect: false,
-    // });
-    // console.log(">>> check data", data);
   };
 
   return (

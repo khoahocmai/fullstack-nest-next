@@ -13,10 +13,9 @@ export class AuthService {
 
   async validateUser(username: string, password: string): Promise<any> {
     const user = await this.usersService.findByEmail(username);
-
     const isValidPassword = await comparePasswordHelper(
       password,
-      user.password,
+      user?.password || 'nothing',
     );
     if (!user || !isValidPassword) return null;
 
@@ -26,6 +25,12 @@ export class AuthService {
   async login(user: any) {
     const payload = { username: user.email, sub: user._id };
     return {
+      user: {
+        email: user.email,
+        role: user.role,
+        name: user.name,
+        _id: user._id,
+      },
       access_token: this.jwtService.sign(payload),
     };
   }
