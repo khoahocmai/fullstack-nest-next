@@ -17,6 +17,7 @@
     "@ant-design/nextjs-registry": "1.0.1",
     "antd": "5.20.6",
     "next": "14.2.12",
+    "next-auth": "5.0.0-beta.20",
     "react": "18.3.1",
     "react-dom": "18.3.1"
   },

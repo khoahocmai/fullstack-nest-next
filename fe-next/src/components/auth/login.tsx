@@ -2,9 +2,22 @@
 import { Button, Col, Divider, Form, Input, Row } from "antd";
 import { ArrowLeftOutlined } from "@ant-design/icons";
 import Link from "next/link";
+import { authenticate } from "@/utils/actions";
 
 const Login = () => {
-  const onFinish = async (values: any) => {};
+  const onFinish = async (values: any) => {
+    const { email, password } = values;
+
+    // trigger sign-in
+    const res = await authenticate(email, password);
+    console.log(">>> check res", res);
+    // const data = await signIn("credentials", {
+    //   email,
+    //   password,
+    //   redirect: false,
+    // });
+    // console.log(">>> check data", data);
+  };
 
   return (
     <Row justify={"center"} style={{ marginTop: "30px" }}>
