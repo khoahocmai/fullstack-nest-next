@@ -1,4 +1,4 @@
-import { CreateAuthDto } from '@/auth/dto/create-auth.dto';
+import { CodeAuthDto, CreateAuthDto } from '@/auth/dto/create-auth.dto';
 import { hashPasswordHelper } from '@/helpers/util';
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
@@ -145,5 +145,24 @@ export class UsersService {
     };
 
     // send email
+  }
+
+  async handleActive(data: CodeAuthDto) {
+    const user = await this.userModel.findOne({
+      _id: data._id,
+      codeId: data.code,
+    });
+    if (!user) {
+      throw new BadRequestException(' Mã code không hợp lệ or hết hạn');
+    }
+    // Check expire code
+    const isBeforeCheck = dayjs().isBefore(user.codeExpired);
+    if (isBeforeCheck) {
+      // Valide => update user
+      await this.userModel.updateOne({ _id: data._id }, { isActive: true });
+      return { isBeforeCheck };
+    } else {
+      throw new BadRequestException('Mã code đã hết hạn');
+    }
   }
 }

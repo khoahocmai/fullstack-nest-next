@@ -8,7 +8,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { CreateAuthDto } from './dto/create-auth.dto';
+import { CodeAuthDto, CreateAuthDto } from './dto/create-auth.dto';
 import { LocalAuthGuard } from './passport/local-auth.guard';
 import { MailerService } from '@nestjs-modules/mailer';
 
@@ -27,11 +27,16 @@ export class AuthController {
     return this.authService.login(req.user);
   }
 
-  // @UseGuards(JwtAuthGuard)
   @Post('register')
   @Public()
   register(@Body() body: CreateAuthDto) {
     return this.authService.register(body);
+  }
+
+  @Post('check-code')
+  @Public()
+  checkCode(@Body() body: CodeAuthDto) {
+    return this.authService.checkCode(body);
   }
 
   @Get('mail')
