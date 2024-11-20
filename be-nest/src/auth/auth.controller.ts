@@ -1,4 +1,4 @@
-import { Public } from '@/decorator/customize';
+import { Public, ResponseMessage } from '@/decorator/customize';
 import {
   Body,
   Controller,
@@ -22,6 +22,7 @@ export class AuthController {
   @Post('login')
   @Public()
   @UseGuards(LocalAuthGuard)
+  @ResponseMessage('Login successfully')
   handleLogin(@Request() req) {
     return this.authService.login(req.user);
   }

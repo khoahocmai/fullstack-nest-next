@@ -1,10 +1,10 @@
 "use server";
 import { signIn } from "@/auth";
 
-export async function authenticate(email: string, password: string) {
+export async function authenticate(username: string, password: string) {
   try {
     const r = await signIn("credentials", {
-      email: email,
+      username: username,
       password: password,
       //   callbackUrl: "/",
       redirect: false,

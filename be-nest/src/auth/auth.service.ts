@@ -13,11 +13,13 @@ export class AuthService {
 
   async validateUser(username: string, password: string): Promise<any> {
     const user = await this.usersService.findByEmail(username);
+    if (!user) return null;
+
     const isValidPassword = await comparePasswordHelper(
       password,
       user?.password || 'nothing',
     );
-    if (!user || !isValidPassword) return null;
+    if (!isValidPassword) return null;
 
     return user;
   }
@@ -27,7 +29,6 @@ export class AuthService {
     return {
       user: {
         email: user.email,
-        role: user.role,
         name: user.name,
         _id: user._id,
       },
