@@ -1,4 +1,8 @@
-import { CodeAuthDto, CreateAuthDto } from '@/auth/dto/create-auth.dto';
+import {
+  ChangePasswordAuthDto,
+  CodeAuthDto,
+  CreateAuthDto,
+} from '@/auth/dto/create-auth.dto';
 import { hashPasswordHelper } from '@/helpers/util';
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
@@ -196,5 +200,58 @@ export class UsersService {
     });
 
     return { _id: user._id };
+  }
+
+  async retryPassword(email: string) {
+    // Check email
+    const user = await this.userModel.findOne({ email });
+    if (!user) {
+      throw new BadRequestException('Tài khoản không tồn tại');
+    }
+
+    const codeId = uuidv4();
+    // Update codeId and codeExpired
+    await user.updateOne({
+      codeId: codeId,
+      codeExpired: dayjs().add(5, 'minutes'),
+    });
+
+    // Send email
+    this.mailerService.sendMail({
+      to: user.email, // list of receivers
+      subject: 'Change your password account at @doduongdangkhoa', // Subject line
+      template: 'register',
+      context: {
+        name: user?.name ?? user.email,
+        activationCode: codeId,
+      },
+    });
+
+    return { _id: user._id, email: user.email };
+  }
+  async changePassword(data: ChangePasswordAuthDto) {
+    // Change password
+    if (data.password !== data.confirmPassword) {
+      throw new BadRequestException('Mật khẩu không khớp');
+    }
+    // Check email
+    const user = await this.userModel.findOne({ email: data.email });
+    if (!user) {
+      throw new BadRequestException('Tài khoản không tồn tại');
+    }
+
+    // Check expire code
+    const isBeforeCheck = dayjs().isBefore(user.codeExpired);
+    if (isBeforeCheck) {
+      // Valide => update password
+      const hashPassword = await hashPasswordHelper(data.password);
+      await user.updateOne({ password: hashPassword });
+
+      return { isBeforeCheck };
+    } else {
+      throw new BadRequestException('Mã code đã hết hạn');
+    }
+
+    return { _id: user._id, email: user.email };
   }
 }
