@@ -130,6 +130,7 @@ export class UsersService {
       codeExpired: dayjs().add(5, 'minutes'),
     });
 
+    // Send email
     this.mailerService.sendMail({
       to: user.email, // list of receivers
       subject: 'Activate your account at @doduongdangkhoa', // Subject line
@@ -164,5 +165,36 @@ export class UsersService {
     } else {
       throw new BadRequestException('Mã code đã hết hạn');
     }
+  }
+
+  async retryActive(email: string) {
+    // Check email
+    const user = await this.userModel.findOne({ email });
+    if (!user) {
+      throw new BadRequestException('Tài khoản không tồn tại');
+    }
+    if (user.isActive) {
+      throw new BadRequestException('Tài khoản đã được kích hoạt');
+    }
+
+    const codeId = uuidv4();
+    // Update codeId and codeExpired
+    await user.updateOne({
+      codeId: codeId,
+      codeExpired: dayjs().add(5, 'minutes'),
+    });
+
+    // Send email
+    this.mailerService.sendMail({
+      to: user.email, // list of receivers
+      subject: 'Activate your account at @doduongdangkhoa', // Subject line
+      template: 'register',
+      context: {
+        name: user?.name ?? user.email,
+        activationCode: codeId,
+      },
+    });
+
+    return { _id: user._id };
   }
 }

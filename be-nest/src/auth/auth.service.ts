@@ -37,10 +37,14 @@ export class AuthService {
   }
 
   async register(registerDto: CreateAuthDto) {
-    return this.usersService.handleRegister(registerDto);
+    return await this.usersService.handleRegister(registerDto);
   }
 
   async checkCode(data: CodeAuthDto) {
-    return this.usersService.handleActive(data);
+    return await this.usersService.handleActive(data);
+  }
+
+  async retryActive(email: string) {
+    return await this.usersService.retryActive(email);
   }
 }

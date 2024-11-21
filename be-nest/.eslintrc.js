@@ -24,6 +24,9 @@ module.exports = {
     '@typescript-eslint/no-explicit-any': 'off',
     'prettier/prettier': ['error', {
       'endOfLine': 'auto', // Tự động điều chỉnh xuống dòng
+      'bracketSpacing': true, // Điều chỉnh khoảng trắng trong dấu ngoặc
+      'singleQuote': true, // Dùng dấu nháy đơn thay vì nháy kép
+      'semi': true, // Luôn có dấu chấm phẩy
     }],
   },
 };
