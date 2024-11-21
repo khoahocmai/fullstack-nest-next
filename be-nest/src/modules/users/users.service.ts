@@ -70,7 +70,15 @@ export class UsersService {
       .skip(skip)
       .select('-password')
       .sort(sort as any);
-    return { results, totalPages };
+    return {
+      meta: {
+        current: current, // trang hiện tại
+        pageSize: pageSize, // số lượng item trên 1 trang
+        pages: totalPages, // tổng số trang
+        total: totalItems, // tổng số item
+      },
+      results, // kết quả trả về
+    };
   }
 
   async findOne(id: string) {
